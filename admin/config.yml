@@ -24,4 +24,3 @@ collections:
         file: "content/settings/site.json"
         fields:
           - {label: "Site-Titel", name: "title", widget: "string"}
-
