@@ -1,3 +1,4 @@
+
 backend:
   name: git-gateway
   branch: main
@@ -14,12 +15,3 @@ collections:
     fields:
       - {label: "Titel", name: "title", widget: "string"}
       - {label: "Inhalt", name: "body", widget: "markdown"}
-
-  - name: "settings"
-    label: "Seiteneinstellungen"
-    files:
-      - label: "Allgemein"
-        name: "site"
-        file: "content/settings/site.json"
-        fields:
-          - {label: "Site-Titel", name: "title", widget: "string"}
