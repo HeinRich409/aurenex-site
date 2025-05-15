@@ -1,1 +1,47 @@
-<!DOCTYPE html><html><head><title>Admin Dashboard</title></head><body><h1>Admin Dashboard</h1></body></html>
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    h1 { color: #222; }
+    .section { margin-bottom: 1.5rem; }
+    .label { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Admin-Dashboard</h1>
+  <div class="section"><span class="label">👤 Kundenanzahl:</span> <span id="kundenCount">Lädt...</span></div>
+  <div class="section"><span class="label">💰 Gesamtguthaben:</span> <span id="gesamtGuthaben">Lädt...</span></div>
+  <div class="section"><span class="label">🎁 Gesamtboni:</span> <span id="gesamtBonus">Lädt...</span></div>
+  <div class="section"><span class="label">🔄 Letzte Transaktion:</span> <span id="letzteTransaktion">Lädt...</span></div>
+
+  <script>
+    const supabase = window.supabase.createClient(
+      "https://sosiczexxefsrqwzlruf.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    );
+
+    async function ladeDashboardDaten() {
+      const { data: kunden, error: err1 } = await supabase.from("kunden").select("*");
+      const { data: transaktionen, error: err2 } = await supabase.from("transactions").select("*").order("zeitpunkt", { ascending: false }).limit(1);
+
+      if (!err1 && kunden) {
+        document.getElementById("kundenCount").textContent = kunden.length;
+        document.getElementById("gesamtGuthaben").textContent = kunden.reduce((sum, k) => sum + (parseFloat(k.guthaben) || 0), 0).toFixed(2) + " €";
+        document.getElementById("gesamtBonus").textContent = kunden.reduce((sum, k) => sum + (parseFloat(k.bonus) || 0), 0).toFixed(2) + " €";
+      }
+
+      if (!err2 && transaktionen && transaktionen.length > 0) {
+        const t = transaktionen[0];
+        document.getElementById("letzteTransaktion").textContent = `${t.typ} von ${t.betrag} € am ${new Date(t.zeitpunkt).toLocaleString()}`;
+      }
+    }
+
+    ladeDashboardDaten();
+  </script>
+</body>
+</html>
