@@ -5,15 +5,8 @@
   <title>Aurenex Admin</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
   <style>
-    body {
-      font-family: sans-serif;
-      padding: 2rem;
-    }
-    input, button {
-      padding: 0.5rem;
-      margin: 0.5rem 0;
-      display: block;
-    }
+    body { font-family: sans-serif; padding: 2rem; }
+    input, button { padding: 0.5rem; margin: 0.5rem 0; display: block; }
   </style>
 </head>
 <body>
@@ -24,7 +17,7 @@
   <p id="message"></p>
 
   <script>
-    const supabase = supabase.createClient(
+    const client = window.supabase.createClient(
       'https://sosiczexxefsrqwzlruf.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc'
     );
@@ -33,10 +26,7 @@
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const {{ data, error }} = await client.auth.signInWithPassword({ email, password });
 
       const msg = document.getElementById("message");
       if (error) {
