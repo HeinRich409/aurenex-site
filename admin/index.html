@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
   <head>
@@ -8,12 +7,18 @@
     <script>
       window.CMS_MANUAL_INIT = true;
     </script>
+
     <script src="https://unpkg.com/netlify-cms-app@^2.15.72/dist/netlify-cms.js"></script>
+
     <script>
-      window.addEventListener("load", () => {
-        CMS.init({
-          config: "/config.yml"
-        });
+      window.addEventListener("load", function () {
+        if (typeof CMS !== "undefined") {
+          CMS.init({
+            config: "/config.yml"
+          });
+        } else {
+          console.error("CMS is not defined");
+        }
       });
     </script>
   </head>
