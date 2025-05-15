@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Aurenex Admin Login</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body { font-family: sans-serif; padding: 2rem; background: #fff; }
     input, button { padding: 0.5rem; margin: 0.5rem 0; display: block; width: 100%; max-width: 300px; }
@@ -16,30 +15,30 @@
   <button onclick="login()">Login</button>
   <p id="msg"></p>
 
-  <script>
-    const supabase = supabase.createClient(
-      "https://sosiczexxefsrqwzlruf.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    const supabase = createClient(
+      'https://sosiczexxefsrqwzlruf.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
     );
 
-    async function login() {
+    window.login = async function login() {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
+      const msg = document.getElementById("msg");
       if (error) {
-        document.getElementById("msg").innerText = "❌ Fehler: " + error.message;
+        msg.innerText = "❌ Fehler: " + error.message;
       } else {
-        document.getElementById("msg").innerText = "✅ Login erfolgreich!";
+        msg.innerText = "✅ Login erfolgreich!";
         setTimeout(() => {
           window.location.href = "dashboard.html";
         }, 1000);
       }
-    }
+    };
   </script>
 </body>
 </html>
