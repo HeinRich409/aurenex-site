@@ -1,9 +1,6 @@
 
-[build]
-  publish = "/"
-  command = ""
-
-[[redirects]]
-  from = "/admin"
-  to = "/admin/"
-  status = 301
+[[headers]]
+  for = "/staticadmin/config.yml"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Content-Type = "text/yaml"
