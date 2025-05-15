@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Aurenex Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial; padding: 2em; background: #f8f8f8; }
+    .login-box, .panel { background: white; padding: 2em; border-radius: 8px; max-width: 600px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h1 { color: #0a0f2c; }
+    .hidden { display: none; }
+  </style>
+  <script>
+    function simulateLogin() {
+      document.getElementById('login').classList.add('hidden');
+      document.getElementById('panel').classList.remove('hidden');
+    }
+  </script>
+</head>
+<body>
+  <div class="login-box" id="login">
+    <h1>Login (Demo)</h1>
+    <p>Hier später: Supabase Auth Login</p>
+    <button onclick="simulateLogin()">Login als Admin</button>
+  </div>
+  <div class="panel hidden" id="panel">
+    <h1>Aurenex Admin Panel</h1>
+    <ul>
+      <li><strong>Startseite bearbeiten</strong></li>
+      <li><strong>Kundenliste einsehen</strong></li>
+      <li><strong>Boni und Guthaben verwalten</strong></li>
+      <li><strong>Trades einsehen</strong></li>
+    </ul>
+    <p>Dies ist eine Vorschau – Backend folgt über Supabase.</p>
+  </div>
+</body>
+</html>
