@@ -26,7 +26,10 @@
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
-      const {{ data, error }} = await client.auth.signInWithPassword({ email, password });
+      const { data, error } = await client.auth.signInWithPassword({
+        email,
+        password,
+      });
 
       const msg = document.getElementById("message");
       if (error) {
