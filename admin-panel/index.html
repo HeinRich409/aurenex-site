@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Aurenex Admin</title>
+  <title>Admin Login</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
   <style>
     body { font-family: sans-serif; padding: 2rem; }
@@ -12,17 +12,15 @@
 </head>
 <body>
   <h1>Admin Login</h1>
-
-  <input type="email" id="email" placeholder="E-Mail eingeben" />
-  <input type="password" id="password" placeholder="Passwort eingeben" />
+  <input type="email" id="email" placeholder="E-Mail" />
+  <input type="password" id="password" placeholder="Passwort" />
   <button onclick="login()">Login</button>
-
   <p id="message" class="message"></p>
 
   <script>
     const client = window.supabase.createClient(
-      'https://sosiczexxefsrqwzlruf.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc'
+      "https://sosiczexxefsrqwzlruf.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc"
     );
 
     async function login() {
@@ -38,8 +36,10 @@
       } else {
         msg.innerText = "✅ Login erfolgreich!";
         msg.style.color = "green";
-        console.log("User:", user);
-        console.log("Session:", session);
+        // Hier Weiterleitung:
+        setTimeout(() => {
+          window.location.href = "kunden.html";
+        }, 1000); // 1 Sekunde warten
       }
     }
   </script>
