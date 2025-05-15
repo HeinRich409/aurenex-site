@@ -1,22 +1,33 @@
-<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><title>Login</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6"></script></head><body><h1>Admin Login</h1>
-<input type="email" id="email" placeholder="E-Mail"><br>
-<input type="password" id="password" placeholder="Passwort"><br>
-<button onclick="login()">Login</button><p id="message"></p>
-<script>
-const supabase = window.supabase.createClient("https://sosiczexxefsrqwzlruf.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...");
-async function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const { user, session, error } = await supabase.auth.signIn({ email, password });
-  const msg = document.getElementById("message");
-  if (error) {
-    msg.textContent = "❌ " + error.message;
-    msg.style.color = "red";
-  } else {
-    msg.textContent = "✅ Login erfolgreich";
-    msg.style.color = "green";
-    setTimeout(() => location.href='dashboard.html', 1000);
-  }
-}
-</script></body></html>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Login</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+  <h1>Admin Login</h1>
+  <input type="email" id="email" placeholder="E-Mail">
+  <input type="password" id="password" placeholder="Passwort">
+  <button onclick="login()">Login</button>
+  <p id="message"></p>
+
+  <script>
+    const supabase = window.supabase.createClient(
+      "https://sosiczexxefsrqwzlruf.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc"
+    );
+
+    async function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const { user, session, error } = await supabase.auth.signIn({ email, password });
+      if (error) {
+        document.getElementById("message").innerText = "Fehler: " + error.message;
+      } else {
+        window.location.href = "dashboard.html";
+      }
+    }
+  </script>
+</body>
+</html>
