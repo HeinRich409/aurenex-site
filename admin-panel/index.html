@@ -17,7 +17,7 @@
   <p id="msg"></p>
 
   <script>
-    const supabase = createClient(
+    const supabase = supabase.createClient(
       "https://sosiczexxefsrqwzlruf.supabase.co",
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
     );
@@ -25,13 +25,20 @@
     async function login() {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
-      const {{ data, error }} = await supabase.auth.signInWithPassword({ email, password });
 
-      if (error) {{
-        document.getElementById("msg").innerText = "Fehler: " + error.message;
-      }} else {{
-        window.location.href = "dashboard.html";
-      }}
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        document.getElementById("msg").innerText = "❌ Fehler: " + error.message;
+      } else {
+        document.getElementById("msg").innerText = "✅ Login erfolgreich!";
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 1000);
+      }
     }
   </script>
 </body>
