@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -8,7 +9,6 @@
     input, button { display: block; margin: 1rem 0; padding: 0.5rem; width: 100%; max-width: 300px; }
     .message { margin-top: 1rem; font-weight: bold; }
   </style>
-  <!-- Supabase v1 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
 </head>
 <body>
@@ -27,7 +27,6 @@
     async function login() {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
-
       const { user, session, error } = await supabase.auth.signIn({
         email: email,
         password: password
@@ -41,7 +40,7 @@
         msg.innerText = "✅ Login erfolgreich!";
         msg.style.color = "green";
         setTimeout(() => {
-          window.location.href = "dashboard.html";
+          window.location.href = "kunden.html";
         }, 1000);
       }
     }

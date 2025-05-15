@@ -1,1 +1,55 @@
-<!DOCTYPE html><html><head><meta charset='utf-8'><title>limits.html</title></head><body><h2>Tageslimits einstellen</h2></body></html>
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Tageslimits</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+    th { background-color: #f4f4f4; }
+  </style>
+</head>
+<body>
+  <h1>Tagesziele (Live aus Supabase)</h1>
+  <table id="limittabelle">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>User ID</th>
+        <th>Max Profit</th>
+        <th>Max Verlust</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <script>
+    const supabase = window.supabase.createClient(
+      "https://sosiczexxefsrqwzlruf.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    );
+    async function ladeLimits() {
+      const { data, error } = await supabase.from("limits").select("*");
+      const tbody = document.querySelector("#limittabelle tbody");
+      tbody.innerHTML = "";
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="4">Fehler: ${error.message}</td></tr>`;
+      } else {
+        data.forEach(limit => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${limit.id}</td>
+            <td>${limit.user_id}</td>
+            <td>${limit.max_profit_day} €</td>
+            <td>${limit.max_loss_day} €</td>
+          `;
+          tbody.appendChild(row);
+        });
+      }
+    }
+    ladeLimits();
+  </script>
+</body>
+</html>
