@@ -1,22 +1,18 @@
+
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8" />
     <title>Aurenex CMS</title>
 
-    <!-- CMS manuell starten -->
     <script>
       window.CMS_MANUAL_INIT = true;
     </script>
-
-    <!-- Netlify CMS laden -->
     <script src="https://unpkg.com/netlify-cms-app@^2.15.72/dist/netlify-cms.js"></script>
-
-    <!-- CMS initialisieren, nachdem das Skript vollständig geladen ist -->
     <script>
       window.addEventListener("load", () => {
         CMS.init({
-          config: "/config.yml" // ⚠️ config.yml muss im Hauptverzeichnis liegen (nicht in /admin)
+          config: "/config.yml"
         });
       });
     </script>
