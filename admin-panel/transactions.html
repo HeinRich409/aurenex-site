@@ -1,57 +1,5 @@
-
 <!DOCTYPE html>
 <html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <title>Transaktionen</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
-  <style>
-    body { font-family: sans-serif; padding: 2rem; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
-    th { background-color: #f4f4f4; }
-  </style>
-</head>
-<body>
-  <h1>Ein- & Auszahlungen (Live aus Supabase)</h1>
-  <table id="transactionstabelle">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>User ID</th>
-        <th>Betrag (€)</th>
-        <th>Typ</th>
-        <th>Zeitpunkt</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-  <script>
-    const supabase = window.supabase.createClient(
-      "https://sosiczexxefsrqwzlruf.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-    );
-    async function ladeTransactions() {
-      const { data, error } = await supabase.from("transactions").select("*");
-      const tbody = document.querySelector("#transactionstabelle tbody");
-      tbody.innerHTML = "";
-      if (error) {
-        tbody.innerHTML = `<tr><td colspan="5">Fehler: ${error.message}</td></tr>`;
-      } else {
-        data.forEach(tx => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td>${tx.id}</td>
-            <td>${tx.user_id}</td>
-            <td>${tx.amount}</td>
-            <td>${tx.type}</td>
-            <td>${tx.timestamp}</td>
-          `;
-          tbody.appendChild(row);
-        });
-      }
-    }
-    ladeTransactions();
-  </script>
-</body>
+<head><meta charset="UTF-8"><title>Transaktionen</title></head>
+<body><h1>Transaktionen</h1></body>
 </html>
