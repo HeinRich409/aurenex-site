@@ -7,11 +7,9 @@
 </head>
 <body>
   <h1>Admin Login</h1>
-  <input type="email" id="email" placeholder="E-Mail">
+  <input type="email" id="email" placeholder="Email">
   <input type="password" id="password" placeholder="Passwort">
   <button onclick="login()">Login</button>
-  <p id="message"></p>
-
   <script>
     const supabase = window.supabase.createClient(
       "https://sosiczexxefsrqwzlruf.supabase.co",
@@ -23,9 +21,9 @@
       const password = document.getElementById("password").value;
       const { user, session, error } = await supabase.auth.signIn({ email, password });
       if (error) {
-        document.getElementById("message").innerText = "Fehler: " + error.message;
+        alert("Login fehlgeschlagen: " + error.message);
       } else {
-        window.location.href = "dashboard.html";
+        window.location.href = "/admin-panel/dashboard.html";
       }
     }
   </script>

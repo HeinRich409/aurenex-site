@@ -1,18 +1,36 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Limits</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6"></script>
-<style>body{font-family:Arial}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:8px}</style>
-</head><body><h1>Limits</h1>
-<table><thead><tr><th>ID</th><th>Daten</th></tr></thead><tbody id="data"></tbody></table>
-<script>
-const supabase = window.supabase.createClient("https://sosiczexxefsrqwzlruf.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...");
-async function fetchData() {
-  const res = await supabase.from("limits").select("*");
-  const tbody = document.getElementById("data");
-  (res.data || []).forEach(row => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${row.id}</td><td>${JSON.stringify(row)}</td>`;
-    tbody.appendChild(tr);
-  });
-}
-fetchData();
-</script></body></html>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Tagesziele</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+  <h1>Tagesziele</h1>
+  <table border="1" id="limits">
+    <thead><tr><th>ID</th><th>User ID</th><th>Max Profit</th><th>Max Verlust</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <script>
+    const supabase = window.supabase.createClient(
+      "https://sosiczexxefsrqwzlruf.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc"
+    );
+    async function loadData() {
+      const { data, error } = await supabase.from("limits").select("*");
+      if (error) return alert("Fehler: " + error.message);
+      const tbody = document.querySelector("tbody");
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+        Object.values(row).forEach(cell => {
+          const td = document.createElement("td");
+          td.textContent = cell;
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
+    loadData();
+  </script>
+</body>
+</html>
