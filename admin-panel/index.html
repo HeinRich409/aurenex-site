@@ -3,36 +3,52 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Aurenex Admin Panel</title>
+  <title>Aurenex Admin Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/+esm" type="module"></script>
   <style>
-    body { font-family: Arial; padding: 2em; background: #f8f8f8; }
-    .login-box, .panel { background: white; padding: 2em; border-radius: 8px; max-width: 600px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    h1 { color: #0a0f2c; }
-    .hidden { display: none; }
+    body { font-family: Arial; padding: 2em; background: #f4f4f4; }
+    .box { background: white; padding: 2em; max-width: 500px; margin: auto; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { color: #0a0f2c; }
+    input { width: 100%; margin-bottom: 1em; padding: 0.5em; }
+    button { padding: 0.7em 1.5em; background: #0a0f2c; color: white; border: none; }
   </style>
-  <script>
-    function simulateLogin() {
-      document.getElementById('login').classList.add('hidden');
-      document.getElementById('panel').classList.remove('hidden');
-    }
-  </script>
 </head>
 <body>
-  <div class="login-box" id="login">
-    <h1>Login (Demo)</h1>
-    <p>Hier später: Supabase Auth Login</p>
-    <button onclick="simulateLogin()">Login als Admin</button>
+  <div class="box" id="login-box">
+    <h2>Admin Login</h2>
+    <input type="email" id="email" placeholder="E-Mail" />
+    <input type="password" id="password" placeholder="Passwort" />
+    <button onclick="login()">Login</button>
+    <p id="error" style="color: red;"></p>
   </div>
-  <div class="panel hidden" id="panel">
-    <h1>Aurenex Admin Panel</h1>
-    <ul>
-      <li><strong>Startseite bearbeiten</strong></li>
-      <li><strong>Kundenliste einsehen</strong></li>
-      <li><strong>Boni und Guthaben verwalten</strong></li>
-      <li><strong>Trades einsehen</strong></li>
-    </ul>
-    <p>Dies ist eine Vorschau – Backend folgt über Supabase.</p>
+
+  <div class="box" id="admin-panel" style="display: none;">
+    <h2>Willkommen im Admin Panel</h2>
+    <p>Du bist eingeloggt!</p>
+    <button onclick="logout()">Logout</button>
   </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/+esm'
+    const supabase = createClient("https://sosiczexxefsrqwzlruf.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc")
+
+    async function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        document.getElementById("error").innerText = "Login fehlgeschlagen.";
+      } else {
+        document.getElementById("login-box").style.display = "none";
+        document.getElementById("admin-panel").style.display = "block";
+      }
+    }
+
+    async function logout() {
+      await supabase.auth.signOut();
+      location.reload();
+    }
+  </script>
 </body>
 </html>
