@@ -6,34 +6,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body { font-family: Arial, sans-serif; padding: 2rem; background: #f9f9f9; }
-    header { font-weight: bold; margin-bottom: 1rem; }
-    input, button { margin: .3rem 0; display: block; }
+    input, button { display: block; margin: .5rem 0; }
   </style>
 </head>
 <body>
-  <header>Admin Login</header>
+  <h1>Admin Login</h1>
   
 <form onsubmit="login(); return false;">
   <input type='email' id='email' placeholder='Admin-E-Mail' required />
   <input type='password' id='password' placeholder='Passwort' required />
   <button type='submit'>Login</button>
 </form>
-<script>
-  async function login() {
-    const { error } = await supabase.auth.signIn({ email: email.value, password: password.value });
-    if (error) return alert('Fehlgeschlagen: ' + error.message);
-    window.location.href = 'dashboard.html';
-  }
-</script>
-
   
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
 <script>
-  const supabase = supabase.createClient(
+  const supabase = window.supabase.createClient(
     'https://sosiczexxefsrqwzlruf.supabase.co',
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc'
   );
 </script>
 
+  <script>
+    
+async function login() {
+  const { error } = await supabase.auth.signIn({ email: email.value, password: password.value });
+  if (error) return alert('Admin Login fehlgeschlagen: ' + error.message);
+  window.location.href = 'dashboard.html';
+}
+
+  </script>
 </body>
 </html>

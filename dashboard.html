@@ -2,32 +2,34 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
+  <title>Kunden Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kunden-Dashboard</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      color: #222;
-      padding: 2rem;
-    }
-    header {
-      background: #333;
-      color: #fff;
-      padding: 1rem;
-      margin-bottom: 1rem;
-    }
-    footer {
-      margin-top: 2rem;
-      padding: 1rem;
-      background: #eee;
-      text-align: center;
-    }
+    body { font-family: Arial, sans-serif; padding: 2rem; background: #f9f9f9; }
+    input, button { display: block; margin: .5rem 0; }
   </style>
 </head>
 <body>
-  <header><h1>Kunden-Dashboard</h1></header>
-  <main><p>Ihr Kundenbereich.</p></main>
-  <footer>© 2025 Aurenex</footer>
+  <h1>Kunden Dashboard</h1>
+  
+<p>Willkommen! Sie sind eingeloggt.</p>
+<button onclick="logout()">Logout</button>
+  
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
+<script>
+  const supabase = window.supabase.createClient(
+    'https://sosiczexxefsrqwzlruf.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc'
+  );
+</script>
+
+  <script>
+    
+async function logout() {
+  await supabase.auth.signOut();
+  window.location.href = 'login.html';
+}
+
+  </script>
 </body>
 </html>
