@@ -1,71 +1,100 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Transaktionen bearbeiten</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6"></script>
-  <style>
-    body { font-family: Arial; padding: 1rem; }
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ccc; padding: 8px; }
-    button { margin-right: 4px; }
-  </style>
+    <meta charset="UTF-8">
+    <title>Transaktionen verwalten</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #1e1e1e; color: white; padding: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; background-color: #333; }
+        th, td { border: 1px solid #666; padding: 8px; text-align: left; }
+        th { background-color: #444; }
+        input, select, button { padding: 5px; margin-right: 10px; }
+    </style>
 </head>
 <body>
-  <h1>Ein- & Auszahlungen</h1>
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th><th>User</th><th>Betrag</th><th>Typ</th><th>Status</th><th>Aktion</th>
-      </tr>
-    </thead>
-    <tbody id="data"></tbody>
-  </table>
-  <script>
-    const supabase = window.supabase.createClient(
-      "https://sosiczexxefsrqwzlruf.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc"
-    );
+    <h1>Transaktionen filtern</h1>
 
-    async function ladeTransaktionen() {
-      const { data, error } = await supabase.from("transactions").select("*");
-      if (error) return alert("Fehler: " + error.message);
+    <label for="userFilter">Kunde:</label>
+    <select id="userFilter">
+        <option value="">Alle</option>
+    </select>
 
-      const tbody = document.getElementById("data");
-      tbody.innerHTML = "";
+    <label for="typeFilter">Typ:</label>
+    <select id="typeFilter">
+        <option value="">Alle</option>
+        <option value="deposit">Einzahlung</option>
+        <option value="withdrawal">Auszahlung</option>
+        <option value="bonus">Bonus</option>
+    </select>
 
-      data.forEach(row => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${row.id}</td>
-          <td>${row.user_id}</td>
-          <td>${row.betrag}</td>
-          <td>${row.typ}</td>
-          <td>${row.status || "offen"}</td>
-          <td>
-            <button onclick="updateStatus(${row.id}, 'genehmigt')">✔️ Genehmigen</button>
-            <button onclick="updateStatus(${row.id}, 'abgelehnt')">❌ Ablehnen</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
+    <label for="dateFrom">Von:</label>
+    <input type="date" id="dateFrom">
+    <label for="dateTo">Bis:</label>
+    <input type="date" id="dateTo">
+    <button onclick="loadTransactions()">Filtern</button>
 
-    async function updateStatus(id, status) {
-      const { error } = await supabase
-        .from("transactions")
-        .update({ status: status })
-        .eq("id", id);
+    <table>
+        <thead>
+            <tr>
+                <th>Kunde</th>
+                <th>Betrag (€)</th>
+                <th>Typ</th>
+                <th>Datum</th>
+            </tr>
+        </thead>
+        <tbody id="transactionsTable"></tbody>
+    </table>
 
-      if (error) {
-        alert("Fehler beim Speichern: " + error.message);
-      } else {
-        alert("✅ Status aktualisiert zu: " + status);
-        ladeTransaktionen();
-      }
-    }
+    <script>
+        const supabase = window.supabase.createClient(
+            "https://sosiczexxefsrqwzlruf.supabase.co",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        );
 
-    ladeTransaktionen();
-  </script>
+        async function loadUsers() {
+            const { data } = await supabase.from("kunden").select("id, name");
+            const select = document.getElementById("userFilter");
+            data.forEach(k => {
+                const option = document.createElement("option");
+                option.value = k.id;
+                option.textContent = k.name;
+                select.appendChild(option);
+            });
+        }
+
+        async function loadTransactions() {
+            const user = document.getElementById("userFilter").value;
+            const type = document.getElementById("typeFilter").value;
+            const from = document.getElementById("dateFrom").value;
+            const to = document.getElementById("dateTo").value;
+
+            let query = supabase.from("transactions").select("*, kunden(name)").order("timestamp", { ascending: false });
+            if (user) query = query.eq("user_id", user);
+            if (type) query = query.eq("type", type);
+            if (from) query = query.gte("timestamp", from);
+            if (to) query = query.lte("timestamp", to);
+
+            const { data, error } = await query;
+            const tbody = document.getElementById("transactionsTable");
+            tbody.innerHTML = "";
+
+            if (data) {
+                data.forEach(t => {
+                    const row = `<tr>
+                        <td>${t.kunden.name}</td>
+                        <td>${t.amount}</td>
+                        <td>${t.type}</td>
+                        <td>${new Date(t.timestamp).toLocaleString()}</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            }
+        }
+
+        loadUsers();
+        loadTransactions();
+    </script>
 </body>
 </html>
