@@ -15,7 +15,6 @@
   <button onclick="register()">Registrieren</button>
 
   <script>
-    // Supabase initialisieren
     const SUPABASE_URL = "https://sosiczexxefsrqwzlruf.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc";
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -33,9 +32,9 @@
         return;
       }
 
-      const { data, error: dbError } = await supabase
+      const { error: dbError } = await supabase
         .from("kunden")
-        .insert([{ id: user.id, email, name, telefon, guthaben: 0, bonus: 0 }]);
+        .insert([{ id: user.id, name, telefon, guthaben: 0, bonus: 0 }]);
 
       if (dbError) {
         alert("Fehler bei Speichern in DB: " + dbError.message);
