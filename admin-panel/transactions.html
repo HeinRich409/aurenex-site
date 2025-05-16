@@ -2,35 +2,70 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Transaktionen</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
+  <title>Transaktionen bearbeiten</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6"></script>
+  <style>
+    body { font-family: Arial; padding: 1rem; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+    button { margin-right: 4px; }
+  </style>
 </head>
 <body>
-  <h1>Transaktionen</h1>
-  <table border="1" id="transactions">
-    <thead><tr><th>ID</th><th>User ID</th><th>Betrag</th><th>Typ</th><th>Zeitpunkt</th></tr></thead>
-    <tbody></tbody>
+  <h1>Ein- & Auszahlungen</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th><th>User</th><th>Betrag</th><th>Typ</th><th>Status</th><th>Aktion</th>
+      </tr>
+    </thead>
+    <tbody id="data"></tbody>
   </table>
   <script>
     const supabase = window.supabase.createClient(
       "https://sosiczexxefsrqwzlruf.supabase.co",
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc"
     );
-    async function loadData() {
+
+    async function ladeTransaktionen() {
       const { data, error } = await supabase.from("transactions").select("*");
       if (error) return alert("Fehler: " + error.message);
-      const tbody = document.querySelector("tbody");
+
+      const tbody = document.getElementById("data");
+      tbody.innerHTML = "";
+
       data.forEach(row => {
         const tr = document.createElement("tr");
-        Object.values(row).forEach(cell => {
-          const td = document.createElement("td");
-          td.textContent = cell;
-          tr.appendChild(td);
-        });
+        tr.innerHTML = `
+          <td>${row.id}</td>
+          <td>${row.user_id}</td>
+          <td>${row.betrag}</td>
+          <td>${row.typ}</td>
+          <td>${row.status || "offen"}</td>
+          <td>
+            <button onclick="updateStatus(${row.id}, 'genehmigt')">✔️ Genehmigen</button>
+            <button onclick="updateStatus(${row.id}, 'abgelehnt')">❌ Ablehnen</button>
+          </td>
+        `;
         tbody.appendChild(tr);
       });
     }
-    loadData();
+
+    async function updateStatus(id, status) {
+      const { error } = await supabase
+        .from("transactions")
+        .update({ status: status })
+        .eq("id", id);
+
+      if (error) {
+        alert("Fehler beim Speichern: " + error.message);
+      } else {
+        alert("✅ Status aktualisiert zu: " + status);
+        ladeTransaktionen();
+      }
+    }
+
+    ladeTransaktionen();
   </script>
 </body>
 </html>
