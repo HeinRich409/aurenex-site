@@ -16,6 +16,7 @@
   <h1>Kunden verwalten</h1>
 
   <h3>➕ Neuer Kunde</h3>
+  <input type="text" id="neu-name" placeholder="Name">
   <input type="text" id="neu-email" placeholder="Email">
   <input type="text" id="neu-telefon" placeholder="Telefon">
   <input type="number" id="neu-guthaben" placeholder="Guthaben">
@@ -28,7 +29,7 @@
   <table>
     <thead>
       <tr>
-        <th>ID</th><th>Email</th><th>Telefon</th><th>Guthaben</th><th>Bonus</th><th>Aktion</th>
+        <th>ID</th><th>Name</th><th>Email</th><th>Telefon</th><th>Guthaben</th><th>Bonus</th><th>Aktion</th>
       </tr>
     </thead>
     <tbody id="data"></tbody>
@@ -57,6 +58,7 @@
 
         tr.innerHTML = `
           <td>${kunde.id}</td>
+          <td><input type="text" id="name-${kunde.id}" value="${kunde.name || ""}"></td>
           <td>${kunde.email || ""}</td>
           <td>${kunde.telefon || ""}</td>
           <td><input type="number" id="guthaben-${kunde.id}" value="${kunde.guthaben || 0}"></td>
@@ -68,12 +70,13 @@
     }
 
     async function speichern(id) {
+      const name = document.getElementById("name-" + id).value;
       const guthaben = parseFloat(document.getElementById("guthaben-" + id).value);
       const bonus = parseFloat(document.getElementById("bonus-" + id).value);
 
       const { error } = await supabase
         .from("kunden")
-        .update({ guthaben, bonus })
+        .update({ name, guthaben, bonus })
         .eq("id", id);
 
       if (error) {
@@ -84,6 +87,7 @@
     }
 
     async function neuerKunde() {
+      const name = document.getElementById("neu-name").value;
       const email = document.getElementById("neu-email").value;
       const telefon = document.getElementById("neu-telefon").value;
       const guthaben = parseFloat(document.getElementById("neu-guthaben").value || 0);
@@ -91,7 +95,7 @@
 
       if (!email) return alert("Bitte Email eingeben");
 
-      const { error } = await supabase.from("kunden").insert([{ email, telefon, guthaben, bonus }]);
+      const { error } = await supabase.from("kunden").insert([{ name, email, telefon, guthaben, bonus }]);
       if (error) {
         alert("❌ Fehler beim Anlegen: " + error.message);
       } else {
