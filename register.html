@@ -1,25 +1,19 @@
 <!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8" />
-  <title>Registrieren</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    body { font-family: Arial, sans-serif; padding: 2rem; background: #f9f9f9; }
-    input, button { display: block; margin: .5rem 0; }
-  </style>
-</head>
-<body>
-  <h1>Registrieren</h1>
-  
-<form onsubmit="registerUser(); return false;">
-  <input type='text' id='name' placeholder='Name' required />
-  <input type='email' id='email' placeholder='E-Mail' required />
-  <input type='tel' id='telefon' placeholder='Telefon' required />
-  <input type='password' id='password' placeholder='Passwort' required />
-  <button type='submit'>Registrieren</button>
+<html lang="de"><head>
+  <meta charset="UTF-8"><title>Registrieren</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>body{font-family:sans-serif;padding:2rem;background:#f9f9f9}</style>
+</head><body>
+<h1>Registrieren</h1>
+
+<form onsubmit="register(); return false;">
+  <input id="name" type="text" placeholder="Name" required />
+  <input id="email" type="email" placeholder="E-Mail" required />
+  <input id="telefon" type="tel" placeholder="Telefon" required />
+  <input id="password" type="password" placeholder="Passwort" required />
+  <button type="submit">Registrieren</button>
 </form>
-  
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
 <script>
   const supabase = window.supabase.createClient(
@@ -28,19 +22,13 @@
   );
 </script>
 
-  <script>
-    
-async function registerUser() {
-  const { user, error } = await supabase.auth.signUp({
-    email: email.value,
-    password: password.value
-  });
-  if (error) return alert('Fehler: ' + error.message);
+<script>
+async function register() {
+  const { user, error } = await supabase.auth.signUp({ email: email.value, password: password.value });
+  if (error) return alert(error.message);
   await supabase.from("kunden").insert([{ id: user.id, name: name.value, email: email.value, telefon: telefon.value }]);
   alert("Registrierung erfolgreich!");
   window.location.href = 'login.html';
 }
-
-  </script>
-</body>
-</html>
+</script>
+</body></html>

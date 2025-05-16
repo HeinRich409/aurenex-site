@@ -1,20 +1,14 @@
 <!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8" />
-  <title>Kunden Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    body { font-family: Arial, sans-serif; padding: 2rem; background: #f9f9f9; }
-    input, button { display: block; margin: .5rem 0; }
-  </style>
-</head>
-<body>
-  <h1>Kunden Dashboard</h1>
-  
-<p>Willkommen! Sie sind eingeloggt.</p>
+<html lang="de"><head>
+  <meta charset="UTF-8"><title>Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>body{font-family:sans-serif;padding:2rem;background:#f9f9f9}</style>
+</head><body>
+<h1>Dashboard</h1>
+
+<p>Willkommen im Kundenbereich!</p>
 <button onclick="logout()">Logout</button>
-  
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
 <script>
   const supabase = window.supabase.createClient(
@@ -23,13 +17,10 @@
   );
 </script>
 
-  <script>
-    
+<script>
 async function logout() {
   await supabase.auth.signOut();
   window.location.href = 'login.html';
 }
-
-  </script>
-</body>
-</html>
+</script>
+</body></html>

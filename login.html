@@ -1,23 +1,17 @@
 <!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8" />
-  <title>Login</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    body { font-family: Arial, sans-serif; padding: 2rem; background: #f9f9f9; }
-    input, button { display: block; margin: .5rem 0; }
-  </style>
-</head>
-<body>
-  <h1>Login</h1>
-  
-<form onsubmit="loginUser(); return false;">
-  <input type='email' id='email' placeholder='E-Mail' required />
-  <input type='password' id='password' placeholder='Passwort' required />
-  <button type='submit'>Login</button>
+<html lang="de"><head>
+  <meta charset="UTF-8"><title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>body{font-family:sans-serif;padding:2rem;background:#f9f9f9}</style>
+</head><body>
+<h1>Login</h1>
+
+<form onsubmit="login(); return false;">
+  <input id="email" type="email" placeholder="E-Mail" required />
+  <input id="password" type="password" placeholder="Passwort" required />
+  <button type="submit">Login</button>
 </form>
-  
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
 <script>
   const supabase = window.supabase.createClient(
@@ -26,14 +20,11 @@
   );
 </script>
 
-  <script>
-    
-async function loginUser() {
+<script>
+async function login() {
   const { error } = await supabase.auth.signIn({ email: email.value, password: password.value });
   if (error) return alert('Login fehlgeschlagen: ' + error.message);
   window.location.href = 'dashboard.html';
 }
-
-  </script>
-</body>
-</html>
+</script>
+</body></html>
