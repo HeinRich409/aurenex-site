@@ -1,51 +1,30 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-  <meta charset="UTF-8" />
-  <title>Registrieren</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
-</head>
+<head><meta charset="UTF-8"><title>Registrieren</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script></head>
 <body>
-  <h1>Registrieren</h1>
-
-  <form onsubmit="register(); return false;">
-    <input type="text" id="name" placeholder="Name" required /><br />
-    <input type="email" id="email" placeholder="Email" required /><br />
-    <input type="tel" id="telefon" placeholder="Telefon" required /><br />
-    <input type="password" id="password" placeholder="Passwort" required /><br />
-    <button type="submit">Registrieren</button>
-  </form>
-
-  <script>
-    const SUPABASE_URL = "https://sosiczexxefsrqwzlruf.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    async function register() {
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const telefon = document.getElementById("telefon").value;
-      const password = document.getElementById("password").value;
-
-      const { user, error } = await supabase.auth.signUp({ email, password });
-
-      if (error) {
-        alert("Fehler bei Registrierung: " + error.message);
-        return;
-      }
-
-      const { error: dbError } = await supabase
-        .from("kunden")
-        .insert([{ id: user.id, email, name, telefon, guthaben: 0, bonus: 0 }]);
-
-      if (dbError) {
-        alert("Fehler bei Speichern in DB: " + dbError.message);
-        return;
-      }
-
-      alert("Registrierung erfolgreich!");
-      window.location.href = "login.html";
-    }
-  </script>
-</body>
-</html>
+<h2>Registrieren</h2>
+<form onsubmit="register(); return false;">
+  <input id="name" placeholder="Name" required><br>
+  <input id="email" type="email" placeholder="E-Mail" required><br>
+  <input id="telefon" placeholder="Telefon" required><br>
+  <input id="password" type="password" placeholder="Passwort" required><br>
+  <button type="submit">Absenden</button>
+</form>
+<script>
+const supabase = window.supabase.createClient("https://sosiczexxefsrqwzlruf.supabase.co",
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc");
+async function register() {
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const telefon = document.getElementById('telefon').value;
+  const password = document.getElementById('password').value;
+  const { user, error } = await supabase.auth.signUp({ email, password });
+  if (error) return alert("Fehler: " + error.message);
+  const { error: dbError } = await supabase.from("kunden").insert([{ id: user.id, email, name, telefon }]);
+  if (dbError) return alert("DB Fehler: " + dbError.message);
+  alert("Erfolgreich registriert!");
+  window.location.href = "login.html";
+}
+</script>
+</body></html>
