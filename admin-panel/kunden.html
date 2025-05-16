@@ -45,26 +45,52 @@
 
     async function ladeKunden() {
       const { data, error } = await supabase.from("kunden").select("*");
-      if (error) {
-        alert("Fehler beim Laden: " + error.message);
-        return;
-      }
+      if (error) return alert("Fehler beim Laden: " + error.message);
 
       globalData = data;
       const tbody = document.getElementById("data");
       tbody.innerHTML = "";
+
       data.forEach(kunde => {
         const tr = document.createElement("tr");
 
-        tr.innerHTML = `
-          <td>${kunde.id}</td>
-          <td><input type="text" id="name-${kunde.id}" value="${kunde.name || ""}"></td>
-          <td>${kunde.email || ""}</td>
-          <td>${kunde.telefon || ""}</td>
-          <td><input type="number" id="guthaben-${kunde.id}" value="${kunde.guthaben || 0}"></td>
-          <td><input type="number" id="bonus-${kunde.id}" value="${kunde.bonus || 0}"></td>
-          <td><button onclick="speichern(${kunde.id})">Speichern</button></td>
-        `;
+        const idTd = document.createElement("td");
+        idTd.textContent = kunde.id;
+
+        const nameTd = document.createElement("td");
+        const nameInput = document.createElement("input");
+        nameInput.type = "text";
+        nameInput.id = `name-${kunde.id}`;
+        nameInput.value = kunde.name || "";
+        nameTd.appendChild(nameInput);
+
+        const emailTd = document.createElement("td");
+        emailTd.textContent = kunde.email || "";
+
+        const telTd = document.createElement("td");
+        telTd.textContent = kunde.telefon || "";
+
+        const guthabenTd = document.createElement("td");
+        const guthabenInput = document.createElement("input");
+        guthabenInput.type = "number";
+        guthabenInput.id = `guthaben-${kunde.id}`;
+        guthabenInput.value = kunde.guthaben || 0;
+        guthabenTd.appendChild(guthabenInput);
+
+        const bonusTd = document.createElement("td");
+        const bonusInput = document.createElement("input");
+        bonusInput.type = "number";
+        bonusInput.id = `bonus-${kunde.id}`;
+        bonusInput.value = kunde.bonus || 0;
+        bonusTd.appendChild(bonusInput);
+
+        const actionTd = document.createElement("td");
+        const saveBtn = document.createElement("button");
+        saveBtn.textContent = "Speichern";
+        saveBtn.onclick = () => speichern(kunde.id);
+        actionTd.appendChild(saveBtn);
+
+        tr.append(idTd, nameTd, emailTd, telTd, guthabenTd, bonusTd, actionTd);
         tbody.appendChild(tr);
       });
     }
@@ -106,11 +132,9 @@
 
     function exportCSV() {
       if (!globalData.length) return;
-
       const header = Object.keys(globalData[0]).join(",");
       const rows = globalData.map(row => Object.values(row).join(","));
-      const csv = [header, ...rows].join("
-");
+      const csv = [header, ...rows].join("\r\n");
 
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       const link = document.createElement("a");
