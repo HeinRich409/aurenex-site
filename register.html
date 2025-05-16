@@ -8,11 +8,13 @@
 <body>
   <h1>Registrieren</h1>
 
-  <input type="text" id="name" placeholder="Name" /><br />
-  <input type="email" id="email" placeholder="Email" /><br />
-  <input type="tel" id="telefon" placeholder="Telefon" /><br />
-  <input type="password" id="password" placeholder="Passwort" /><br />
-  <button onclick="register()">Registrieren</button>
+  <form onsubmit="register(); return false;">
+    <input type="text" id="name" placeholder="Name" required /><br />
+    <input type="email" id="email" placeholder="Email" required /><br />
+    <input type="tel" id="telefon" placeholder="Telefon" required /><br />
+    <input type="password" id="password" placeholder="Passwort" required /><br />
+    <button type="submit">Registrieren</button>
+  </form>
 
   <script>
     const SUPABASE_URL = "https://sosiczexxefsrqwzlruf.supabase.co";
@@ -34,7 +36,7 @@
 
       const { error: dbError } = await supabase
         .from("kunden")
-        .insert([{ id: user.id, name, telefon, guthaben: 0, bonus: 0 }]);
+        .insert([{ id: user.id, email, name, telefon, guthaben: 0, bonus: 0 }]);
 
       if (dbError) {
         alert("Fehler bei Speichern in DB: " + dbError.message);
@@ -42,6 +44,7 @@
       }
 
       alert("Registrierung erfolgreich!");
+      window.location.href = "login.html";
     }
   </script>
 </body>
