@@ -1,14 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
   <title>Kundenliste</title>
   <style>
-    body { font-family: Arial, sans-serif; background-color: #fff; color: #000; padding: 2rem; }
+    body { font-family: Arial; padding: 2rem; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #999; padding: 8px; text-align: left; }
-    th { background-color: #eee; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+    th { background: #f2f2f2; }
     input[type="number"] { width: 80px; }
     button { padding: 5px 10px; }
   </style>
@@ -29,8 +28,7 @@
         <th>Speichern</th>
       </tr>
     </thead>
-    <tbody id="kunden-body">
-    </tbody>
+    <tbody id="kunden-body"></tbody>
   </table>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
@@ -42,12 +40,10 @@
 
     async function ladeKunden() {
       const { data, error } = await supabase.from("kunden").select("*");
-      if (error) {
-        console.error("Fehler beim Laden:", error);
-        return;
-      }
+      if (error) return alert("Fehler beim Laden!");
 
       const tbody = document.getElementById("kunden-body");
+      tbody.innerHTML = "";
       data.forEach(k => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
@@ -59,22 +55,42 @@
           <td>${k.bonus}</td>
           <td><input type="number" id="guthaben-${k.id}" value="${k.guthaben}"></td>
           <td><input type="number" id="bonus-${k.id}" value="${k.bonus}"></td>
-          <td><button onclick="speichern('${k.id}')">Speichern</button></td>
+          <td><button onclick="speichern('${k.id}', ${k.guthaben})">Speichern</button></td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    async function speichern(id) {
-      const guthaben = parseFloat(document.getElementById("guthaben-" + id).value);
-      const bonus = parseFloat(document.getElementById("bonus-" + id).value);
+    async function speichern(id, altesGuthaben) {
+      const neuesGuthaben = parseFloat(document.getElementById("guthaben-" + id).value);
+      const neuerBonus = parseFloat(document.getElementById("bonus-" + id).value);
 
-      const { error } = await supabase.from("kunden").update({ guthaben, bonus }).eq("id", id);
-      if (error) {
+      const { error: updateError } = await supabase.from("kunden").update({
+        guthaben: neuesGuthaben,
+        bonus: neuerBonus
+      }).eq("id", id);
+
+      if (updateError) {
         alert("Fehler beim Speichern!");
-        console.error(error);
+        console.error(updateError);
+        return;
+      }
+
+      const { error: transError } = await supabase.from("transactions").insert([
+        {
+          user_id: id,
+          amount: neuesGuthaben - altesGuthaben,
+          type: "Guthabenänderung",
+          timestamp: new Date().toISOString()
+        }
+      ]);
+
+      if (transError) {
+        alert("⚠️ Kunde gespeichert, aber Transaktion fehlgeschlagen.");
+        console.error(transError);
       } else {
-        alert("Erfolgreich gespeichert!");
+        alert("✅ Kunde und Transaktion gespeichert!");
+        ladeKunden();
       }
     }
 
