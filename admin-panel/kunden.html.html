@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Kunden bearbeiten</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6"></script>
+  <style>
+    body { font-family: Arial; padding: 1rem; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+    input { width: 100px; }
+    button { padding: 4px 8px; }
+  </style>
+</head>
+<body>
+  <h1>Kunden bearbeiten</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th><th>Email</th><th>Telefon</th><th>Guthaben</th><th>Bonus</th><th>Aktion</th>
+      </tr>
+    </thead>
+    <tbody id="data"></tbody>
+  </table>
+  <script>
+    const supabase = window.supabase.createClient(
+      "https://sosiczexxefsrqwzlruf.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc"
+    );
+
+    async function ladeKunden() {
+      const { data, error } = await supabase.from("kunden").select("*");
+      if (error) {
+        alert("Fehler beim Laden: " + error.message);
+        return;
+      }
+
+      const tbody = document.getElementById("data");
+      data.forEach(kunde => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td>${kunde.id}</td>
+          <td>${kunde.email || ""}</td>
+          <td>${kunde.telefon || ""}</td>
+          <td><input type="number" id="guthaben-${kunde.id}" value="${kunde.guthaben || 0}"></td>
+          <td><input type="number" id="bonus-${kunde.id}" value="${kunde.bonus || 0}"></td>
+          <td><button onclick="speichern(${kunde.id})">Speichern</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function speichern(id) {
+      const guthaben = parseFloat(document.getElementById("guthaben-" + id).value);
+      const bonus = parseFloat(document.getElementById("bonus-" + id).value);
+
+      const { error } = await supabase
+        .from("kunden")
+        .update({ guthaben: guthaben, bonus: bonus })
+        .eq("id", id);
+
+      if (error) {
+        alert("❌ Fehler beim Speichern: " + error.message);
+      } else {
+        alert("✅ Aktualisiert");
+      }
+    }
+
+    ladeKunden();
+  </script>
+</body>
+</html>
