@@ -2,19 +2,29 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Kunden bearbeiten + Export</title>
+  <title>Kunden verwalten</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6"></script>
   <style>
     body { font-family: Arial; padding: 1rem; }
     table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
     th, td { border: 1px solid #ccc; padding: 8px; }
-    input { width: 100px; }
-    button { padding: 4px 8px; margin-top: 1rem; }
+    input { width: 120px; margin: 4px 4px 4px 0; }
+    button { padding: 6px 10px; margin-top: 6px; }
   </style>
 </head>
 <body>
-  <h1>Kunden bearbeiten</h1>
+  <h1>Kunden verwalten</h1>
+
+  <h3>➕ Neuer Kunde</h3>
+  <input type="text" id="neu-email" placeholder="Email">
+  <input type="text" id="neu-telefon" placeholder="Telefon">
+  <input type="number" id="neu-guthaben" placeholder="Guthaben">
+  <input type="number" id="neu-bonus" placeholder="Bonus">
+  <button onclick="neuerKunde()">Anlegen</button>
+
+  <h3>📋 Kundenliste</h3>
   <button onclick="exportCSV()">⬇️ CSV exportieren</button>
+
   <table>
     <thead>
       <tr>
@@ -23,6 +33,7 @@
     </thead>
     <tbody id="data"></tbody>
   </table>
+
   <script>
     const supabase = window.supabase.createClient(
       "https://sosiczexxefsrqwzlruf.supabase.co",
@@ -40,6 +51,7 @@
 
       globalData = data;
       const tbody = document.getElementById("data");
+      tbody.innerHTML = "";
       data.forEach(kunde => {
         const tr = document.createElement("tr");
 
@@ -61,13 +73,30 @@
 
       const { error } = await supabase
         .from("kunden")
-        .update({ guthaben: guthaben, bonus: bonus })
+        .update({ guthaben, bonus })
         .eq("id", id);
 
       if (error) {
         alert("❌ Fehler beim Speichern: " + error.message);
       } else {
         alert("✅ Aktualisiert");
+      }
+    }
+
+    async function neuerKunde() {
+      const email = document.getElementById("neu-email").value;
+      const telefon = document.getElementById("neu-telefon").value;
+      const guthaben = parseFloat(document.getElementById("neu-guthaben").value || 0);
+      const bonus = parseFloat(document.getElementById("neu-bonus").value || 0);
+
+      if (!email) return alert("Bitte Email eingeben");
+
+      const { error } = await supabase.from("kunden").insert([{ email, telefon, guthaben, bonus }]);
+      if (error) {
+        alert("❌ Fehler beim Anlegen: " + error.message);
+      } else {
+        alert("✅ Neuer Kunde angelegt");
+        ladeKunden();
       }
     }
 
