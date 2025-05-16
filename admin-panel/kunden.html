@@ -109,7 +109,7 @@
 
       const header = Object.keys(globalData[0]).join(",");
       const rows = globalData.map(row => Object.values(row).join(","));
-      const csv = [header, ...rows].join("\r\n");
+      const csv = [header, ...rows].join("rn");
 
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       const link = document.createElement("a");
