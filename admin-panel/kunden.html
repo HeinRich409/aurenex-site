@@ -107,9 +107,21 @@
 
       if (error) {
         alert("❌ Fehler beim Speichern: " + error.message);
-      } else {
-        alert("✅ Aktualisiert");
+        return;
       }
+
+      // Transaktion einfügen
+      const transTyp = guthaben >= 0 ? 'einzahlung' : 'auszahlung';
+      await supabase.from("transactions").insert([
+        {
+          user_id: id,
+          amount: guthaben,
+          type: transTyp,
+          timestamp: new Date().toISOString()
+        }
+      ]);
+
+      alert("✅ Kunde und Transaktion gespeichert");
     }
 
     async function neuerKunde() {
