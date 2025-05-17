@@ -2,69 +2,76 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <title>Kundenübersicht (live)</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
-    <style>
-        body { font-family: Arial; padding: 20px; background: #f4f4f4; }
-        table { border-collapse: collapse; width: 100%; background: white; }
-        th, td { border: 1px solid #ddd; padding: 8px; }
-        th { background-color: #222; color: white; }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Kundenübersicht (bearbeitbar)</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
+  <style>
+    body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; background: white; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    th { background-color: #111; color: white; }
+    input { width: 80px; }
+  </style>
 </head>
 <body>
-    <h2>Kundenübersicht (bearbeitbar)</h2>
-    <table id="kundenTabelle">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Email</th>
-                <th>Name</th>
-                <th>Telefon</th>
-                <th>Guthaben</th>
-                <th>Bonus</th>
-                <th>Aktion</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+  <h1>Kundenübersicht (bearbeitbar)</h1>
+  <table id="kundenTable">
+    <thead>
+      <tr>
+        <th>ID</th><th>Email</th><th>Name</th><th>Telefon</th><th>Guthaben</th><th>Bonus</th><th>Aktion</th>
+      </tr>
+    </thead>
+    <tbody id="kundenBody">
+      <tr><td colspan="7">Wird geladen...</td></tr>
+    </tbody>
+  </table>
 
-    <script>
-        const supabase = window.supabase.createClient(
-            "https://sosiczexxefsrqwzlruf.supabase.co",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc"
-        );
+  <script>
+    const supabaseUrl = 'https://sosiczexxefsrqwzlruf.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc';
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        async function ladeKunden() {
-            const { data, error } = await supabase.from("kunden").select("*").order("name", { ascending: true });
-            const tbody = document.querySelector("#kundenTabelle tbody");
-            tbody.innerHTML = "";
+    async function loadKunden() {
+      const { data, error } = await supabase.from('kunden').select('*');
+      const body = document.getElementById('kundenBody');
+      if (error || !data) {
+        body.innerHTML = '<tr><td colspan="7">Fehler beim Laden der Daten.</td></tr>';
+        return;
+      }
+      body.innerHTML = '';
+      data.forEach(kunde => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${kunde.id}</td>
+          <td>${kunde.email}</td>
+          <td>${kunde.name}</td>
+          <td>${kunde.telefon}</td>
+          <td><input type="number" value="${kunde.guthaben || 0}" id="guthaben-${kunde.id}"></td>
+          <td><input type="number" value="${kunde.bonus || 0}" id="bonus-${kunde.id}"></td>
+          <td><button onclick="speichern('${kunde.id}')">Speichern</button></td>
+        `;
+        body.appendChild(tr);
+      });
+    }
 
-            if (error) {
-                tbody.innerHTML = "<tr><td colspan='7'>Fehler beim Laden: " + error.message + "</td></tr>";
-                return;
-            }
+    async function speichern(kundenId) {
+      const guthaben = document.getElementById('guthaben-' + kundenId).value;
+      const bonus = document.getElementById('bonus-' + kundenId).value;
 
-            data.forEach(kunde => {
-                const zeile = document.createElement("tr");
-                zeile.innerHTML = `
-                    <td>${kunde.id}</td>
-                    <td>${kunde.email}</td>
-                    <td>${kunde.name}</td>
-                    <td>${kunde.telefon}</td>
-                    <td>${kunde.guthaben}</td>
-                    <td>${kunde.bonus}</td>
-                    <td><button onclick="bearbeiten('${kunde.id}')">Bearbeiten</button></td>
-                `;
-                tbody.appendChild(zeile);
-            });
-        }
+      const { error } = await supabase.from('kunden').update({
+        guthaben: parseFloat(guthaben),
+        bonus: parseFloat(bonus)
+      }).eq('id', kundenId);
 
-        function bearbeiten(id) {
-            alert("Funktion bearbeiten für ID: " + id + " (noch nicht implementiert)");
-        }
+      if (error) {
+        alert('Fehler beim Speichern: ' + error.message);
+      } else {
+        alert('Erfolgreich gespeichert');
+        loadKunden();
+      }
+    }
 
-        ladeKunden();
-    </script>
+    loadKunden();
+  </script>
 </body>
 </html>
