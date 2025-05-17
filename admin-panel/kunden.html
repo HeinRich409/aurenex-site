@@ -12,6 +12,12 @@
     input { width: 100px; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
+  <script>
+    const supabase = window.supabase.createClient(
+      'https://sosiczexxefsrqwzlruf.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc'
+    );
+  </script>
 </head>
 <body>
   <h2>Kunden verwalten</h2>
@@ -35,11 +41,6 @@
   </table>
 
   <script>
-    const supabase = supabase.createClient(
-      'https://sosiczexxefsrqwzlruf.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc'
-    );
-
     async function ladeKunden() {
       const { data, error } = await supabase.from('kunden').select('*');
       const body = document.getElementById("kundenBody");
@@ -79,7 +80,6 @@
         return;
       }
 
-      // Transaktion hinzufügen (nur wenn sich etwas geändert hat)
       if (neuGuthaben != altGuthaben) {
         await supabase.from('transactions').insert([{
           user_id: id,
