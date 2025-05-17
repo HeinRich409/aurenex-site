@@ -2,78 +2,104 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <title>Kundenübersicht (bearbeitbar)</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
+  <meta charset="UTF-8">
+  <title>Kunden verwalten</title>
   <style>
-    body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
-    table { border-collapse: collapse; width: 100%; background: white; }
-    th, td { border: 1px solid #ddd; padding: 8px; }
-    th { background-color: #111; color: white; }
-    input { width: 80px; }
+    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th, td { padding: 10px; border: 1px solid #ccc; }
+    th { background-color: #222; color: white; }
+    input { width: 100px; }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
 </head>
 <body>
-  <h1>Kundenübersicht (bearbeitbar)</h1>
-  <table id="kundenTable">
+  <h2>Kunden verwalten</h2>
+  <table>
     <thead>
       <tr>
-        <th>ID</th><th>Email</th><th>Name</th><th>Telefon</th><th>Guthaben</th><th>Bonus</th><th>Aktion</th>
+        <th>ID</th>
+        <th>Email</th>
+        <th>Name</th>
+        <th>Telefon</th>
+        <th>Guthaben</th>
+        <th>Bonus</th>
+        <th>Neu Guthaben</th>
+        <th>Neu Bonus</th>
+        <th>Speichern</th>
       </tr>
     </thead>
     <tbody id="kundenBody">
-      <tr><td colspan="7">Wird geladen...</td></tr>
+      <tr><td colspan="9">Lade Daten...</td></tr>
     </tbody>
   </table>
 
   <script>
-    // ✅ Supabase-Client richtig initialisieren
-    const supabaseUrl = 'https://sosiczexxefsrqwzlruf.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc';
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    const supabase = supabase.createClient(
+      'https://sosiczexxefsrqwzlruf.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc'
+    );
 
-    async function loadKunden() {
+    async function ladeKunden() {
       const { data, error } = await supabase.from('kunden').select('*');
-      const body = document.getElementById('kundenBody');
+      const body = document.getElementById("kundenBody");
       if (error || !data) {
-        body.innerHTML = '<tr><td colspan="7">Fehler beim Laden der Daten.</td></tr>';
+        body.innerHTML = '<tr><td colspan="9">Fehler beim Laden</td></tr>';
         return;
       }
       body.innerHTML = '';
-      data.forEach(kunde => {
+      data.forEach(k => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${kunde.id}</td>
-          <td>${kunde.email}</td>
-          <td>${kunde.name}</td>
-          <td>${kunde.telefon}</td>
-          <td><input type="number" value="${kunde.guthaben || 0}" id="guthaben-${kunde.id}"></td>
-          <td><input type="number" value="${kunde.bonus || 0}" id="bonus-${kunde.id}"></td>
-          <td><button onclick="speichern('${kunde.id}')">Speichern</button></td>
+          <td>${k.id}</td>
+          <td>${k.email}</td>
+          <td>${k.name}</td>
+          <td>${k.telefon || ''}</td>
+          <td>${k.guthaben || 0}</td>
+          <td>${k.bonus || 0}</td>
+          <td><input id="guthaben-${k.id}" type="number" value="${k.guthaben || 0}"></td>
+          <td><input id="bonus-${k.id}" type="number" value="${k.bonus || 0}"></td>
+          <td><button onclick="speichern('${k.id}', '${k.guthaben || 0}', '${k.bonus || 0}')">Speichern</button></td>
         `;
         body.appendChild(tr);
       });
     }
 
-    async function speichern(kundenId) {
-      const guthaben = parseFloat(document.getElementById('guthaben-' + kundenId).value);
-      const bonus = parseFloat(document.getElementById('bonus-' + kundenId).value);
+    async function speichern(id, altGuthaben, altBonus) {
+      const neuGuthaben = parseFloat(document.getElementById(`guthaben-${id}`).value);
+      const neuBonus = parseFloat(document.getElementById(`bonus-${id}`).value);
 
       const { error } = await supabase.from('kunden').update({
-        guthaben,
-        bonus
-      }).eq('id', kundenId);
+        guthaben: neuGuthaben,
+        bonus: neuBonus
+      }).eq('id', id);
 
       if (error) {
-        alert('Fehler beim Speichern: ' + error.message);
-      } else {
-        alert('Erfolgreich gespeichert!');
-        loadKunden();
+        alert("Fehler beim Speichern: " + error.message);
+        return;
       }
+
+      // Transaktion hinzufügen (nur wenn sich etwas geändert hat)
+      if (neuGuthaben != altGuthaben) {
+        await supabase.from('transactions').insert([{
+          user_id: id,
+          amount: neuGuthaben - altGuthaben,
+          type: 'deposit'
+        }]);
+      }
+      if (neuBonus != altBonus) {
+        await supabase.from('transactions').insert([{
+          user_id: id,
+          amount: neuBonus - altBonus,
+          type: 'bonus'
+        }]);
+      }
+
+      alert("Gespeichert & Transaktion hinzugefügt!");
+      ladeKunden();
     }
 
-    // ✅ Kunden sofort laden
-    loadKunden();
+    ladeKunden();
   </script>
 </body>
 </html>
