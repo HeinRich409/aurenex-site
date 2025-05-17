@@ -1,1 +1,76 @@
-<h2>Limits</h2><p>Wird bald verbunden...</p>
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Limits bearbeiten</title>
+  <style>
+    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th, td { padding: 10px; border: 1px solid #ccc; }
+    th { background-color: #222; color: white; }
+    input { width: 100px; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
+  <script>
+    const supabase = window.supabase.createClient(
+      'https://sosiczexxefsrqwzlruf.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc'
+    );
+
+    async function ladeLimits() {
+      const { data, error } = await supabase.from('kunden').select('*');
+      const body = document.getElementById("limitsBody");
+      if (error || !data) {
+        body.innerHTML = '<tr><td colspan="5">Fehler beim Laden</td></tr>';
+        return;
+      }
+      body.innerHTML = '';
+      data.forEach(k => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${k.name || k.email}</td>
+          <td>${k.tageslimit || 0}</td>
+          <td><input id="limit-${k.id}" type="number" value="${k.tageslimit || 0}"></td>
+          <td><button onclick="speichern('${k.id}')">Speichern</button></td>
+        `;
+        body.appendChild(tr);
+      });
+    }
+
+    async function speichern(id) {
+      const neuesLimit = parseFloat(document.getElementById(`limit-${id}`).value);
+
+      const { error } = await supabase.from('kunden')
+        .update({ tageslimit: neuesLimit })
+        .eq('id', id);
+
+      if (error) {
+        alert("Fehler beim Speichern: " + error.message);
+        return;
+      }
+
+      alert("Limit gespeichert!");
+      ladeLimits();
+    }
+
+    window.onload = ladeLimits;
+  </script>
+</head>
+<body>
+  <h2>Limits bearbeiten</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Kunde</th>
+        <th>Aktuelles Limit (€)</th>
+        <th>Neues Limit (€)</th>
+        <th>Aktion</th>
+      </tr>
+    </thead>
+    <tbody id="limitsBody">
+      <tr><td colspan="4">Lade Daten...</td></tr>
+    </tbody>
+  </table>
+</body>
+</html>
