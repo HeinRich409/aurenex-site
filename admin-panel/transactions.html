@@ -1,1 +1,65 @@
-<h2>Transactions</h2><p>Wird bald verbunden...</p>
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Transaktionen</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
+  <style>
+    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; background: white; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    th { background-color: #222; color: white; }
+  </style>
+</head>
+<body>
+  <h2>Transaktionen (Live)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Kunde</th>
+        <th>Betrag (€)</th>
+        <th>Typ</th>
+        <th>Zeitpunkt</th>
+      </tr>
+    </thead>
+    <tbody id="transaktionenBody">
+      <tr><td colspan="4">Lade Daten...</td></tr>
+    </tbody>
+  </table>
+
+  <script>
+    const supabase = window.supabase.createClient(
+      'https://sosiczexxefsrqwzlruf.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc'
+    );
+
+    async function ladeTransaktionen() {
+      const { data, error } = await supabase
+        .from("transactions")
+        .select("amount, type, timestamp, kunden(name)")
+        .order("timestamp", { ascending: false });
+
+      const tbody = document.getElementById("transaktionenBody");
+      if (error) {
+        tbody.innerHTML = "<tr><td colspan='4'>Fehler beim Laden: " + error.message + "</td></tr>";
+        return;
+      }
+
+      tbody.innerHTML = "";
+      data.forEach(t => {
+        const zeile = document.createElement("tr");
+        zeile.innerHTML = `
+          <td>${t.kunden?.name || "-"}</td>
+          <td>${t.amount.toFixed(2)}</td>
+          <td>${t.type}</td>
+          <td>${new Date(t.timestamp).toLocaleString()}</td>
+        `;
+        tbody.appendChild(zeile);
+      });
+    }
+
+    ladeTransaktionen();
+  </script>
+</body>
+</html>
