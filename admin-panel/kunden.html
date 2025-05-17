@@ -1,1 +1,58 @@
-<h2>Kunden</h2><p>Wird bald verbunden...</p>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kunden verwalten</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
+  <style>
+    table, th, td { border: 1px solid black; border-collapse: collapse; padding: 6px; }
+  </style>
+</head>
+<body>
+  <h2>Kundenübersicht</h2>
+  <table id="kundentabelle">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Email</th>
+        <th>Name</th>
+        <th>Telefon</th>
+        <th>Guthaben</th>
+        <th>Bonus</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+<script>
+const supabase = window.supabase.createClient(
+  "https://sosiczexxefsrqwzlruf.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc"
+);
+
+async function ladeKunden() {
+  const { data, error } = await supabase.from("kunden").select("*");
+  if (error) {
+    alert("Fehler beim Laden: " + error.message);
+    return;
+  }
+
+  const tbody = document.querySelector("#kundentabelle tbody");
+  tbody.innerHTML = "";
+  data.forEach(kunde => {
+    const row = `<tr>
+      <td>${kunde.id}</td>
+      <td>${kunde.email}</td>
+      <td>${kunde.name}</td>
+      <td>${kunde.telefon}</td>
+      <td>${kunde.guthaben}</td>
+      <td>${kunde.bonus}</td>
+    </tr>`;
+    tbody.innerHTML += row;
+  });
+}
+
+ladeKunden();
+</script>
+</body>
+</html>
