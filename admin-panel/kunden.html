@@ -2,104 +2,59 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+  <title>Kundenübersicht</title>
+  
   <meta charset="UTF-8">
-  <title>Kunden verwalten</title>
   <style>
     body { font-family: Arial; background: #f4f4f4; padding: 20px; }
     table { width: 100%; border-collapse: collapse; background: white; }
     th, td { padding: 10px; border: 1px solid #ccc; }
     th { background-color: #222; color: white; }
-    input { width: 100px; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
   <script>
-    const supabase = window.supabase.createClient(
+    const supabase = supabase.createClient(
       'https://sosiczexxefsrqwzlruf.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc'
     );
   </script>
+
 </head>
 <body>
-  <h2>Kunden verwalten</h2>
+  <h2>Kundenübersicht</h2>
   <table>
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Email</th>
         <th>Name</th>
-        <th>Telefon</th>
+        <th>Email</th>
         <th>Guthaben</th>
         <th>Bonus</th>
-        <th>Neu Guthaben</th>
-        <th>Neu Bonus</th>
-        <th>Speichern</th>
+        <th>Tageslimit</th>
       </tr>
     </thead>
-    <tbody id="kundenBody">
-      <tr><td colspan="9">Lade Daten...</td></tr>
-    </tbody>
+    <tbody id="kundenList"><tr><td colspan="5">Lade...</td></tr></tbody>
   </table>
 
   <script>
-    async function ladeKunden() {
-      const { data, error } = await supabase.from('kunden').select('*');
-      const body = document.getElementById("kundenBody");
-      if (error || !data) {
-        body.innerHTML = '<tr><td colspan="9">Fehler beim Laden</td></tr>';
+    async function lade() {
+      const { data, error } = await supabase.from('kunden_view').select('*');
+      const el = document.getElementById("kundenList");
+      el.innerHTML = '';
+      if (error) {
+        el.innerHTML = '<tr><td colspan="5">Fehler: ' + error.message + '</td></tr>';
         return;
       }
-      body.innerHTML = '';
       data.forEach(k => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${k.id}</td>
-          <td>${k.email}</td>
+        el.innerHTML += `<tr>
           <td>${k.name}</td>
-          <td>${k.telefon || ''}</td>
-          <td>${k.guthaben || 0}</td>
-          <td>${k.bonus || 0}</td>
-          <td><input id="guthaben-${k.id}" type="number" value="${k.guthaben || 0}"></td>
-          <td><input id="bonus-${k.id}" type="number" value="${k.bonus || 0}"></td>
-          <td><button onclick="speichern('${k.id}', '${k.guthaben || 0}', '${k.bonus || 0}')">Speichern</button></td>
-        `;
-        body.appendChild(tr);
+          <td>${k.email}</td>
+          <td>${k.guthaben}</td>
+          <td>${k.bonus}</td>
+          <td>${k.tageslimit}</td>
+        </tr>`;
       });
     }
-
-    async function speichern(id, altGuthaben, altBonus) {
-      const neuGuthaben = parseFloat(document.getElementById(`guthaben-${id}`).value);
-      const neuBonus = parseFloat(document.getElementById(`bonus-${id}`).value);
-
-      const { error } = await supabase.from('kunden').update({
-        guthaben: neuGuthaben,
-        bonus: neuBonus
-      }).eq('id', id);
-
-      if (error) {
-        alert("Fehler beim Speichern: " + error.message);
-        return;
-      }
-
-      if (neuGuthaben != altGuthaben) {
-        await supabase.from('transactions').insert([{
-          user_id: id,
-          amount: neuGuthaben - altGuthaben,
-          type: 'deposit'
-        }]);
-      }
-      if (neuBonus != altBonus) {
-        await supabase.from('transactions').insert([{
-          user_id: id,
-          amount: neuBonus - altBonus,
-          type: 'bonus'
-        }]);
-      }
-
-      alert("Gespeichert & Transaktion hinzugefügt!");
-      ladeKunden();
-    }
-
-    ladeKunden();
+    lade();
   </script>
 </body>
 </html>

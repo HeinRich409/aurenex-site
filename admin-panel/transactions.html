@@ -2,18 +2,26 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+  <title>Transaktionen</title>
+  
   <meta charset="UTF-8">
-  <title>Transaktionen (Live)</title>
   <style>
-    body { font-family: Arial; background-color: #f4f4f4; padding: 20px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: white; }
-    th, td { padding: 12px; border: 1px solid #ccc; text-align: left; }
-    th { background-color: #111; color: white; }
+    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th, td { padding: 10px; border: 1px solid #ccc; }
+    th { background-color: #222; color: white; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
+  <script>
+    const supabase = supabase.createClient(
+      'https://sosiczexxefsrqwzlruf.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc'
+    );
+  </script>
+
 </head>
 <body>
-  <h2>Transaktionen (Live)</h2>
+  <h2>Transaktionen</h2>
   <table>
     <thead>
       <tr>
@@ -23,42 +31,28 @@
         <th>Zeitpunkt</th>
       </tr>
     </thead>
-    <tbody id="transactionList"></tbody>
+    <tbody id="transList"><tr><td colspan="4">Lade...</td></tr></tbody>
   </table>
 
   <script>
-    // Supabase korrekt initialisieren
-    const supabaseUrl = 'https://sosiczexxefsrqwzlruf.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc';
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-    async function loadTransactions() {
-      const { data, error } = await supabase
-        .from('transactions')
-        .select('amount, type, timestamp, kunden(name)')
-        .order('timestamp', { ascending: false });
-
-      const table = document.getElementById('transactionList');
-      table.innerHTML = '';
-
+    async function lade() {
+      const { data, error } = await supabase.from('transactions_view').select('*');
+      const el = document.getElementById("transList");
+      el.innerHTML = '';
       if (error) {
-        table.innerHTML = '<tr><td colspan="4">Fehler: ' + error.message + '</td></tr>';
+        el.innerHTML = '<tr><td colspan="4">Fehler: ' + error.message + '</td></tr>';
         return;
       }
-
       data.forEach(t => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${t.kunden?.name || 'Unbekannt'}</td>
+        el.innerHTML += `<tr>
+          <td>${t.kunde}</td>
           <td>${t.amount}</td>
           <td>${t.type}</td>
           <td>${new Date(t.timestamp).toLocaleString()}</td>
-        `;
-        table.appendChild(row);
+        </tr>`;
       });
     }
-
-    loadTransactions();
+    lade();
   </script>
 </body>
 </html>
