@@ -2,14 +2,16 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Kunden verwalten</title>
+  <title>Kunden bearbeiten</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
   <style>
     table, th, td { border: 1px solid black; border-collapse: collapse; padding: 6px; }
+    input[type='number'] { width: 80px; }
+    button { padding: 4px 10px; }
   </style>
 </head>
 <body>
-  <h2>Kundenübersicht</h2>
+  <h2>Kundenübersicht (bearbeitbar)</h2>
   <table id="kundentabelle">
     <thead>
       <tr>
@@ -19,6 +21,7 @@
         <th>Telefon</th>
         <th>Guthaben</th>
         <th>Bonus</th>
+        <th>Aktion</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -45,11 +48,28 @@ async function ladeKunden() {
       <td>${kunde.email}</td>
       <td>${kunde.name}</td>
       <td>${kunde.telefon}</td>
-      <td>${kunde.guthaben}</td>
-      <td>${kunde.bonus}</td>
+      <td><input type="number" id="guthaben-${kunde.id}" value="${kunde.guthaben}"></td>
+      <td><input type="number" id="bonus-${kunde.id}" value="${kunde.bonus}"></td>
+      <td><button onclick="speichern('${kunde.id}')">Speichern</button></td>
     </tr>`;
     tbody.innerHTML += row;
   });
+}
+
+async function speichern(kundenId) {
+  const guthaben = parseFloat(document.getElementById("guthaben-" + kundenId).value);
+  const bonus = parseFloat(document.getElementById("bonus-" + kundenId).value);
+
+  const { error } = await supabase.from("kunden").update({
+    guthaben,
+    bonus
+  }).eq("id", kundenId);
+
+  if (error) {
+    alert("Fehler beim Speichern: " + error.message);
+  } else {
+    alert("Erfolgreich gespeichert!");
+  }
 }
 
 ladeKunden();
