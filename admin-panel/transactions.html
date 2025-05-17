@@ -1,80 +1,63 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <title>Transaktionen (Live)</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
-            color: #333;
-        }
-        h1 {
-            padding: 10px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border: 1px solid #ccc;
-        }
-        th {
-            background: #111;
-            color: #fff;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Transaktionen (Live)</title>
+  <style>
+    body { font-family: Arial; background-color: #f4f4f4; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: white; }
+    th, td { padding: 12px; border: 1px solid #ccc; text-align: left; }
+    th { background-color: #111; color: white; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
 </head>
 <body>
-    <h1>Transaktionen (Live)</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Kunde</th>
-                <th>Betrag (€)</th>
-                <th>Typ</th>
-                <th>Zeitpunkt</th>
-            </tr>
-        </thead>
-        <tbody id="transaktionenTabelle">
-        </tbody>
-    </table>
+  <h2>Transaktionen (Live)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Kunde</th>
+        <th>Betrag (€)</th>
+        <th>Typ</th>
+        <th>Zeitpunkt</th>
+      </tr>
+    </thead>
+    <tbody id="transactionList"></tbody>
+  </table>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
-    <script>
-        const supabaseUrl = 'https://sosiczexxefsrqwzlruf.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  <script>
+    const supabase = supabase.createClient(
+      'https://sosiczexxefsrqwzlruf.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc'
+    );
 
-        async function ladeTransaktionen() {
-            const { data, error } = await supabase
-                .from('transactions')
-                .select('amount, type, timestamp, kunden(name)')
-                .order('timestamp', { ascending: false });
+    async function loadTransactions() {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('amount, type, timestamp, kunden(name)')
+        .order('timestamp', { ascending: false });
 
-            if (error) {
-                console.error('Fehler beim Laden:', error);
-                return;
-            }
+      if (error) {
+        console.error('Fehler beim Laden der Transaktionen:', error.message);
+        return;
+      }
 
-            const table = document.getElementById('transaktionenTabelle');
-            data.forEach(row => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${row.kunden?.name || 'Unbekannt'}</td>
-                    <td>${row.amount} €</td>
-                    <td>${row.type}</td>
-                    <td>${new Date(row.timestamp).toLocaleString()}</td>
-                `;
-                table.appendChild(tr);
-            });
-        }
+      const table = document.getElementById('transactionList');
+      table.innerHTML = '';
 
-        ladeTransaktionen();
-    </script>
+      data.forEach(t => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${t.kunden?.name || 'Unbekannt'}</td>
+          <td>${t.amount}</td>
+          <td>${t.type}</td>
+          <td>${new Date(t.timestamp).toLocaleString()}</td>
+        `;
+        table.appendChild(row);
+      });
+    }
+
+    loadTransactions();
+  </script>
 </body>
 </html>
