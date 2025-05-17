@@ -1,32 +1,17 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-  <meta charset="UTF-8" />
-  <title>Admin Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    body { font-family: Arial, sans-serif; padding: 2rem; background: #f9f9f9; }
-    input, button { display: block; margin: .5rem 0; }
-  </style>
-</head>
+<head><meta charset="UTF-8"><title>Admin Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script></head>
 <body>
-  <h1>Admin Dashboard</h1>
-  
+<h1>Willkommen im Admin Dashboard</h1>
 <ul>
-  <li><a href='kunden.html'>Kunden</a></li>
-  <li><a href='transactions.html'>Transaktionen</a></li>
+  <li><a href="kunden.html">Kunden verwalten</a></li>
+  <li><a href="transactions.html">Transaktionen</a></li>
+  <li><a href="limits.html">Limits</a></li>
+  <li><a href="trades.html">Trades</a></li>
+  <li><a href="login.html" onclick="supabase.auth.signOut()">Logout</a></li>
 </ul>
-  
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
 <script>
-  const supabase = window.supabase.createClient(
-    'https://sosiczexxefsrqwzlruf.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc'
-  );
+const supabase = window.supabase.createClient("https://sosiczexxefsrqwzlruf.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvc2ljemV4eGVmc3Jxd3pscnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTk0NjUsImV4cCI6MjA2Mjg3NTQ2NX0.ybmly8tbxB_rrS-sOzkHoYgCnTa2hzKuYN1BYc3MaYc");
 </script>
-
-  <script>
-    
-  </script>
-</body>
-</html>
+</body></html>
